@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { FC, useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { 
   Box, 
@@ -29,12 +29,21 @@ import {
 import { UIContext } from '../../context';
 
 
-export const SideMenu = () => {
+export const SideMenu: FC = () => {
   const {isMenuOpen, toggleSideMenu} = useContext(UIContext);
+  const [searchTerm, setSearchTerm] = useState('');
   const { push } = useRouter();
-  const navigateTo = (url: string) => {
+  const onSearchTerm = () => {
+    if(searchTerm.trim().length === 0){
+      return;
+    }
+
     toggleSideMenu();
+    navigateTo(`/search/${searchTerm}`);
+  };
+  const navigateTo = (url: string) => {
     push(url);
+    setSearchTerm('');
   };
   return (
     <Drawer
@@ -47,11 +56,18 @@ export const SideMenu = () => {
           <List>
             <ListItem>
               <Input
-                type='text'
+                value={searchTerm}
+                type="text"
                 placeholder="Buscar..."
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => {
+                  if(e.code === 'Enter'){
+                    onSearchTerm();
+                  }
+                }}
                 endAdornment={
                   <InputAdornment position="end">
-                    <IconButton aria-label="toggle password visibility">
+                    <IconButton aria-label="toggle password visibility" onClick={onSearchTerm}>
                       <SearchOutlined />
                     </IconButton>
                   </InputAdornment>
