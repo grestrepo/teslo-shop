@@ -86,11 +86,21 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
 
   const product = await dbProducts.getProductBySlug(slug);
 
+  if(!product){
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    };
+  }
+
 
   return {
     props: {
       product
-    }
+    },
+    revalidate: 60*60*24
   };
 };
 
